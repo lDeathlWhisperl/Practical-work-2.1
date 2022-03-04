@@ -5,19 +5,22 @@
 #include <string>
 #include <vector>
 
-
 struct student
 {
     std::string fullName = "test";
-    bool sex = 0;
-    int age = 0;
+    char sex = 'F';
+    int age = 10;
     int group = 1000;
     int id = 0;
-    double GPA = 0.01;
-    int sessionGrades[3] = {3, 3, 3};
-    int commonGrades[4] = {3, 3, 3, 3};
+    int sessionGrades[3] = { 3, 3, 3 };
+    int commonGrades[4] = { 3, 3, 3, 3 };
+    double GPA = floor((sessionGrades[0] + sessionGrades[1] + sessionGrades[2] + commonGrades[0] + commonGrades[1] + commonGrades[2] + commonGrades[3]) / 7.0 * 100) / 100 ;
 };
 
+void fullscreen()
+{
+    ShowWindow(GetForegroundWindow(), SW_SHOWMAXIMIZED);
+}
 void setColor(int text, int background)
 {
     HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -26,103 +29,126 @@ void setColor(int text, int background)
 void menu(int id)
 {
     char str[][80] = {
-        "               Exit               |",
-        "Create a new student entry        |",
-        "Edit an existing entry            |",
-        "Displaying all student data       |",
-        "Displaying information of group N |" };
+        "|               Exit               |",
+        "|Create a new student entry        |",
+        "|Edit an existing entry            |",
+        "|Display all student data          |",
+        "|Display information of group \"N\"  |",
+        "|Top DPA students                  |",
+        "|Display male or female students   |",
+        "|Display students which are...     |",
+        "|Display students with \"K\" id      |"};
 
-    std::cout << "+----------------------------------+\n";
+    std::cout <<
+        "+==================================+\n";
 
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 9; i++)
     {
-        if (i == id) setColor(0, 7);
-        std::cout << '|' << str[i] << '\n';
+        if (i == id && i != 0) setColor(0, 2);
+        else if (i == id && i == 0) setColor(0, 4);
+        std::cout << str[i] << '\n';
         if (i == id) setColor(15, 0);
     }
 
-    std::cout << 
-        "+----------------------------------+\n"
+    std::cout <<
+        "+==================================+\n"
         "| Controls:                        |\n"
         "|                                  |\n"
         "| [w]     -> scroll up             |\n"
         "| [s]     -> scroll down           |\n"
         "| [Space] -> select                |\n"
-        "+----------------------------------+\n";
+        "+==================================+\n";
 
 }
-void outputAllStudentsInfo(const std::vector<student> st)
+void outputAllStudentsInfo(const std::vector<student>& st)
 {
-    std::cout << 
-        "+------------------------+-----+---------+--------+----------------+--------+-----+-------+-------------+-----------------------+-------------------------+---------+---------+\n"
-        "|          Имя           | пол | возраст | группа | номер в группе | G.P.A. | АиГ | МатАн | Информатика | Программирование(пр.) | Программирование(лекц.) | История | Анг.яз. |\n"
-        "+------------------------+-----+---------+--------+----------------+--------+-----+-------+-------------+-----------------------+-------------------------+---------+---------+\n";
+    std::cout <<
+        "+========================+=====+=====+========+====+========+=====+=========+=============+=======================+=======================+=========+=========+\n"
+        "|          Name          | Sex | Age | Group  | ID | G.P.A. | A&G | Math An | Informatics | Programming (lecture) | Programming(practice) | History | English |\n"
+        "+========================+=====+=====+========+====+========+=====+=========+=============+=======================+=======================+=========+=========+\n";
 
 
     for (int i = 0; i < st.size(); i++)
-        std::cout << "| " << std::left << std::setw(23) << st[i].fullName << "|  " << ((st[i].sex) ? 'M' : 'F') << "  |    " << st[i].age << "   |  " << st[i].group << "  |\t" << st[i].id << "\t   |  " << st[i].GPA << "  |  "  << st[i].sessionGrades[0] << "  |   " << st[i].sessionGrades[1] << "   |      " << st[i].sessionGrades[2] << "      |           " << st[i].commonGrades[0] << "           |            " << st[i].commonGrades[1] << "            |    " << st[i].commonGrades[2] << "    |    " << st[i].commonGrades[3] << "    |\n";
-
-    std::cout << 
-        "+------------------------+-----+---------+--------+----------------+--------+-----+-------+-------------+-----------------------+-------------------------+---------+---------+\n";
+        std::cout << "| " << std::left << std::setw(23) << st[i].fullName << "|  " << (char)toupper(st[i].sex) << "  | " << st[i].age << "  |  " << st[i].group << "  | " << st[i].id << "  |  " << std::setw(6) << st[i].GPA << "|  " << st[i].sessionGrades[0] << "  |    " << st[i].sessionGrades[1] << "    |      " << st[i].sessionGrades[2] << "      |           " << st[i].commonGrades[0] << "           |           " << st[i].commonGrades[1] << "           |    " << st[i].commonGrades[2] << "    |    " << st[i].commonGrades[3] << "    |\n";
+    
+    std::cout <<
+        "+========================+=====+=====+========+====+========+=====+=========+=============+=======================+=======================+=========+=========+\n";
+    //"+------------------------+-----+-----+--------+----+--------+-----+---------+-------------+-----------------------+-----------------------+---------+---------+\n
 }
-void createNewEntry(std::vector<student> st)
+void errormessage(int &value, int rangeFrom, int rangeTo)
 {
-    std::cout << 
-        "+--------------------+\n"
+    while (value < rangeFrom || value > rangeTo)
+    {
+        std::cout << "you entered unacceptable value, try again: ";
+        std::cin >> value;
+    }
+}
+void createNewEntry(std::vector<student>& st)
+{
+    using namespace std;
+    std::cout <<
+        "+====================+\n"
         "| Creating new entry |\n"
-        "+--------------------+\n";
+        "+====================+\n";
 
     student temp;
-    std::cout << "Last name first name: ";
-    std::cin >> temp.fullName;
+    cout << "Last name first name: ";
+    cin >> temp.fullName;
+    ////////////////////////////////////////////////////////////////////////////////////
+    cout << "\nSex (F/M): ";
+    cin >> temp.sex;
 
-    std::cout << "\nSex (0/1): ";
-    std::cin >> temp.sex;
-
-    std::cout << "\nAge: ";
-    std::cin >> temp.age;
-
-    std::cout << "\nGroup: ";
-    std::cin >> temp.group;
-
-    std::cout << "\nId: ";
-    std::cin >> temp.id;
-
-    std::cout << "\nGPA: ";
-    std::cin >> temp.GPA;
-
-    std::cout << "\nAlgebra and geometry grade: ";
-    std::cin >> temp.sessionGrades[0];
-
-    std::cout << "\nMath analysis grade: ";
-    std::cin >> temp.sessionGrades[1];
-
-    std::cout << "\nInformation technologies grade: ";
-    std::cin >> temp.sessionGrades[2];
-
-    std::cout << "\nProgramming(lecture) grade: ";
-    std::cin >> temp.commonGrades[0];
-
-    std::cout << "\nProgramming(practice) grade: ";
-    std::cin >> temp.commonGrades[1];
-
-    std::cout << "\nHistory grade: ";
-    std::cin >> temp.commonGrades[2];
-
-    std::cout << "\nEnglish language grade: ";
-    std::cin >> temp.commonGrades[3];
-
-    st.push_back({ temp.fullName, temp.sex, temp.age, temp.group, temp.id, temp.GPA, temp.sessionGrades[0], temp.sessionGrades[1], temp.sessionGrades[2], temp.commonGrades[0], temp.commonGrades[1], temp.commonGrades[2], temp.commonGrades[3] });
+    while ((temp.sex != 'F' && temp.sex != 'M') && (temp.sex != 'f' && temp.sex != 'm'))
+    {
+        cout << "you entered unacceptable value, try again: ";
+        cin >> temp.sex;
+    }
+    ////////////////////////////////////////////////////////////////////////////////////
+    cout << "\nAge: ";
+    cin >> temp.age;
+    errormessage(temp.age, 18, 99);
+    ////////////////////////////////////////////////////////////////////////////////////
+    cout << "\nGroup: ";
+    cin >> temp.group;
+    errormessage(temp.group, 1000, 9999);
+    ////////////////////////////////////////////////////////////////////////////////////
+    cout << "\nId: ";
+    cin >> temp.id;
+    ////////////////////////////////////////////////////////////////////////////////////
+    cout << "\nAlgebra and geometry grade: ";
+    cin >> temp.sessionGrades[0];
+    errormessage(temp.sessionGrades[0], 3, 5);
+    ////////////////////////////////////////////////////////////////////////////////////
+    cout << "\nMath analysis grade: ";
+    cin >> temp.sessionGrades[1];
+    errormessage(temp.sessionGrades[1], 3, 5);
+    ////////////////////////////////////////////////////////////////////////////////////
+    cout << "\nInformatics grade: ";
+    cin >> temp.sessionGrades[2];
+    errormessage(temp.sessionGrades[2], 3, 5);
+    ////////////////////////////////////////////////////////////////////////////////////
+    cout << "\nProgramming(lecture) grade: ";
+    cin >> temp.commonGrades[0];
+    errormessage(temp.commonGrades[0], 3, 5);
+    ////////////////////////////////////////////////////////////////////////////////////
+    cout << "\nProgramming(practice) grade: ";
+    cin >> temp.commonGrades[1];
+    errormessage(temp.commonGrades[1], 3, 5);
+    ////////////////////////////////////////////////////////////////////////////////////
+    cout << "\nHistory grade: ";
+    cin >> temp.commonGrades[2];
+    errormessage(temp.commonGrades[2], 3, 5);
+    ////////////////////////////////////////////////////////////////////////////////////
+    cout << "\nEnglish grade: ";
+    cin >> temp.commonGrades[3];
+    errormessage(temp.commonGrades[3], 3, 5);
+    ////////////////////////////////////////////////////////////////////////////////////
+    st.push_back(temp);
 }
-void selectedField(int id, bool& status)
+void selectedField(int position, bool& status, std::vector<student>& students)
 {
-    std::vector<student> students;
-    students.push_back({ "Бессмертных Артем", 1, 20, 1324, 1, 0.01, 0, 5, 0, 0, 0, 0, 0 });
-    students.push_back({ "Мансуров Ярослав",  1, 20, 1324, 2, 0.01, 0, 0, 0, 4, 4, 0, 0 });
-    students.push_back({ "Митин Илья",        1, 20, 1324, 3, 4.86, 5, 4, 5, 5, 5, 5, 5 });
-
     system("Cls");
-    switch (id)
+    switch (position)
     {
     case 0:
         status = false;
@@ -145,7 +171,12 @@ void selectedField(int id, bool& status)
 int main()
 {
     setlocale(0, "rus");
-    ShowWindow(GetForegroundWindow(), SW_SHOWMAXIMIZED);
+    fullscreen();
+
+    std::vector<student> students;
+    students.push_back({ "Бессмертных Артем", 'M', 20, 1324, 1, 0, 5, 0, 0, 0, 0, 0});
+    students.push_back({ "Мансуров Ярослав",  'M', 20, 1324, 2, 0, 0, 0, 0, 4, 4, 0});
+    students.push_back({ "Митин Илья",        'M', 20, 1324, 3, 5, 4, 5, 5, 5, 5, 5});
 
     int scroll = 0;
     bool isEnabled = true;
@@ -159,11 +190,11 @@ int main()
                 scroll--;
             break;
         case 's':
-            if (scroll != 4)
+            if (scroll != 8)
                 scroll++;
             break;
         case ' ':
-            selectedField(scroll, isEnabled);
+            selectedField(scroll, isEnabled, students);
             break;
         }
         system("Cls");
