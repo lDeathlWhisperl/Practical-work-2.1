@@ -17,7 +17,6 @@ struct student
 };
 
 
-void bubblesort(std::vector<student>& st);
 void fullscreen();
 void setColor(int text, int background);
 void mainMenu(int id);

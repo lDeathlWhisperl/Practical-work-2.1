@@ -3,25 +3,9 @@
 #include <windows.h>
 #include <conio.h>
 #include <vector>
+#include <algorithm>
 #include "Functions.h"
 
-void bubblesort(std::vector<student>& st)
-{
-    bool flag = true;
-
-    while (flag)
-    {
-        flag = false;
-        for (int i = 0; i < st.size() - 1; i++)
-        {
-            if (st[i] < st[i + 1])
-            {
-                flag = true;
-                std::swap(st[i], st[i + 1]);
-            }
-        }
-    }
-}
 void fullscreen()
 {
     ShowWindow(GetForegroundWindow(), SW_SHOWMAXIMIZED);
@@ -418,25 +402,20 @@ void displaySelectedId(const std::vector<student> st)
 void displayTopGPAStudents(std::vector<student> st)
 {
     int size = st.size();
-    double* GPA = new double[size];
 
-    for (int i = 0; i < size; i++)
-        GPA[i] = st[i].GPA;
-
-    bubblesort(st);
+    std::sort(st.begin(), st.end());
 
     std::cout <<
         "+=======+========================+=====+=====+========+====+========+=====+=========+=============+=======================+=======================+=========+=========+\n"
         "| Place |          Name          | Sex | Age | Group  | ID | G.P.A. | A&G | Math An | Informatics | Programming (lecture) | Programming(practice) | History | English |\n"
         "+=======+========================+=====+=====+========+====+========+=====+=========+=============+=======================+=======================+=========+=========+\n";
 
-    for (int i = 0; i < size; i++)
-        std::cout << "|   " << i + 1 << "   | " << std::left << std::setw(23) << st[i].fullName << "|  " << st[i].sex << "  | " << st[i].age << "  |  " << st[i].group << "  | " << st[i].id << "  |  " << std::setw(6) << st[i].GPA << "|  " << st[i].sessionGrades[0] << "  |    " << st[i].sessionGrades[1] << "    |      " << st[i].sessionGrades[2] << "      |           " << st[i].commonGrades[0] << "           |           " << st[i].commonGrades[1] << "           |    " << st[i].commonGrades[2] << "    |    " << st[i].commonGrades[3] << "    |\n";
+    for (int i = size-1; i >= 0; i--)
+        std::cout << "|   " << (i - size) * -1 << "   | " << std::left << std::setw(23) << st[i].fullName << "|  " << st[i].sex << "  | " << st[i].age << "  |  " << st[i].group << "  | " << st[i].id << "  |  " << std::setw(6) << st[i].GPA << "|  " << st[i].sessionGrades[0] << "  |    " << st[i].sessionGrades[1] << "    |      " << st[i].sessionGrades[2] << "      |           " << st[i].commonGrades[0] << "           |           " << st[i].commonGrades[1] << "           |    " << st[i].commonGrades[2] << "    |    " << st[i].commonGrades[3] << "    |\n";
 
     std::cout <<
         "+=======+========================+=====+=====+========+====+========+=====+=========+=============+=======================+=======================+=========+=========+\n";
 
-    delete[] GPA;
     system("pause");
 }
 void displayAllStudentsInfo(const std::vector<student> st)
