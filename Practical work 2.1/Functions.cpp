@@ -6,6 +6,7 @@
 #include <algorithm>
 #include "Functions.h"
 
+//other
 void fullscreen()
 {
     ShowWindow(GetForegroundWindow(), SW_SHOWMAXIMIZED);
@@ -15,18 +16,19 @@ void setColor(int text, int background)
     HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(hStdOut, (WORD)((background << 4) | text));
 }
+//menu types
 void mainMenu(int id)
 {
     char str[][80] = {
-        "|               Exit               |",   /*0*/
-        "|Create a new student entry        |",   /*1*/
-        "|Edit an existing entry            |",   /*2*/
-        "|Display all student data          |",   /*3*/
-        "|Display information of group \"N\"  |", /*4*/
+        "|               Exit               |",   
+        "|Create a new student entry        |",   
+        "|Edit an existing entry            |",   
+        "|Display all student data          |",   
+        "|Display information of group \"N\"  |", 
         "|Top DPA students                  |",
-        "|Display male or female students   |",   /*6*/
-        "|Display students who...           |",   /*7*/
-        "|Display students with \"K\" id      |" };/*8*/
+        "|Display male or female students   |",   
+        "|Display students who...           |",   
+        "|Display students with \"K\" id      |" };
 
     std::cout <<
         "+==================================+\n";
@@ -119,6 +121,7 @@ void grantMenu(int id)
         "| [Space] -> select                            |\n"
         "+==============================================+\n";;
 }
+//editing
 void errormessage(int& value, int rangeFrom, int rangeTo)
 {
     while (value < rangeFrom || value > rangeTo)
@@ -137,6 +140,11 @@ void createNewEntry(std::vector<student>& st)
     student temp;
     std::cout << "Last name first name: ";
     getline(std::cin, temp.fullName, '\n'); //нужно поставить лимит на символы
+    while (temp.fullName.size() > 22)
+    {
+        std::cout << "You have entered more than 22 sumbols. Please use the shotred form of the name\n";
+        getline(std::cin, temp.fullName, '\n');
+    }
     ////////////////////////////////////////////////////////////////////////////////////
     std::cout << "\nSex (F/M): ";
     std::cin >> temp.sex;
@@ -150,9 +158,9 @@ void createNewEntry(std::vector<student>& st)
     std::cin >> temp.age;
     errormessage(temp.age, 18, 99);
     ////////////////////////////////////////////////////////////////////////////////////
-    std::cout << "\nGroup: ";
+    std::cout << "\nGroup (1321-1326): ";
     std::cin >> temp.group;
-    errormessage(temp.group, 1000, 9999);
+    errormessage(temp.group, 1321, 1326);
     ////////////////////////////////////////////////////////////////////////////////////
     std::cout << "\nId: ";
     std::cin >> temp.id;
@@ -261,6 +269,11 @@ void editingEntry(int &id, std::vector<student>& st, bool &deleting)
 
         std::cout << "Name: " << st[id].fullName << " -> ";
         getline(std::cin, st[id].fullName, '\n'); //нужно поставить лимит на символы
+        while (st[id].fullName.size() > 22)
+        {
+            std::cout << "You have entered more than 22 sumbols. Please use the shotred form of the name\n";
+            getline(std::cin, st[id].fullName, '\n');
+        }
         ////////////////////////////////////////////////////////////////////////////////////
         std::cout << "Sex: " << st[id].sex << " -> ";
         std::cin >> st[id].sex;
@@ -274,9 +287,9 @@ void editingEntry(int &id, std::vector<student>& st, bool &deleting)
         std::cin >> st[id].age;
         errormessage(st[id].age, 18, 99);
         ////////////////////////////////////////////////////////////////////////////////////
-        std::cout << "Group: " << st[id].group << " -> ";
+        std::cout << "Group (1323-1326): " << st[id].group << " -> ";
         std::cin >> st[id].group;
-        errormessage(st[id].group, 1000, 9999);
+        errormessage(st[id].group, 1323, 1326);
         ////////////////////////////////////////////////////////////////////////////////////
         std::cout << "Id: " << st[id].id << " -> ";
         std::cin >> st[id].id;
@@ -313,6 +326,7 @@ void editingEntry(int &id, std::vector<student>& st, bool &deleting)
         st[id].GPA = floor((st[id].sessionGrades[0] + st[id].sessionGrades[1] + st[id].sessionGrades[2] + st[id].commonGrades[0] + st[id].commonGrades[1] + st[id].commonGrades[2] + st[id].commonGrades[3]) / 7.0 * 100) / 100;
     }
 }
+//Student's marks
 void withOutGrant(const std::vector<student> st)
 {
     system("cls");
@@ -361,55 +375,7 @@ void excellent(const std::vector<student> st)
         "+========================+=====+=====+========+====+========+=====+=========+=============+=======================+=======================+=========+=========+\n";
     system("pause");
 }
-void selectingGrant(int id, const std::vector<student> st)
-{
-    switch (id)
-    {
-    case 1:
-        withOutGrant(st);
-        break;
-    case 2:
-        goodExcellent(st);
-        break;
-    case 3:
-        excellent(st);
-        break;
-    }
-}
-void selectingEntry(std::vector<student>& st)
-{
-    int scroll = -1;
-    bool isEnabled = true,
-        isDeleting = false;
-
-
-    while (isEnabled)
-    {
-        editingMenu(st, scroll, isDeleting);
-        switch (_getch())
-        {
-        case 'w':
-            if (scroll != -1) scroll--;
-            else scroll = st.size() - 1;
-            break;
-        case 's':
-            if (scroll != st.size() - 1) scroll++;
-            else scroll = -1;
-            break;
-        case 'd':
-            if(scroll != -1) isDeleting = true;
-            break;
-        case 'a':
-            isDeleting = false;
-            break;
-        case ' ':
-            if (scroll == -1) isEnabled = false;
-            else editingEntry(scroll, st, isDeleting);
-            break;
-        }
-        system("cls");
-    }
-}
+//outputing
 void displaySelectedGroup(const std::vector<student> st)
 {
     int group;
@@ -513,6 +479,55 @@ void displayAllStudentsInfo(const std::vector<student> st)
         "+========================+=====+=====+========+====+========+=====+=========+=============+=======================+=======================+=========+=========+\n";
     system("pause");
 }
+//field selecting
+void selectingGrant(int id, const std::vector<student> st)
+{
+    switch (id)
+    {
+    case 1:
+        withOutGrant(st);
+        break;
+    case 2:
+        goodExcellent(st);
+        break;
+    case 3:
+        excellent(st);
+        break;
+    }
+}
+void selectingEntry(std::vector<student>& st)
+{
+    int scroll = -1;
+    bool isEnabled = true,
+        isDeleting = false;
+
+    while (isEnabled)
+    {
+        editingMenu(st, scroll, isDeleting);
+        switch (_getch())
+        {
+        case 'w':
+            if (scroll != -1) scroll--;
+            else scroll = st.size() - 1;
+            break;
+        case 's':
+            if (scroll != st.size() - 1) scroll++;
+            else scroll = -1;
+            break;
+        case 'd':
+            if (scroll != -1) isDeleting = true;
+            break;
+        case 'a':
+            isDeleting = false;
+            break;
+        case ' ':
+            if (scroll == -1) isEnabled = false;
+            else editingEntry(scroll, st, isDeleting);
+            break;
+        }
+        system("cls");
+    }
+}
 void studentsGrant(const std::vector<student> st)
 {
     int scroll = 0;
@@ -570,7 +585,7 @@ void selectedField(int position, std::vector<student>& students)
         break;
     }
 }
-
+//file processing
 void getFromFile(std::vector<student>& st)
 {
     std::string fN;              //structure field  -> fullName
