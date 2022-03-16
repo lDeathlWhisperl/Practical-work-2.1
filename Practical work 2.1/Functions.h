@@ -1,8 +1,9 @@
 #pragma once
+#include <string>
 
 struct student
 {
-    char fullName[23] = "test";
+    std::string fullName;
     char sex = 'F';
     int age = 10;
     int group = 1000;

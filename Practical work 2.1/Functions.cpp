@@ -49,7 +49,7 @@ void mainMenu(int id)
         "+==================================+\n";
 
 }
-void editingMenu(std::vector<student>& st, int id)
+void editingMenu(std::vector<student>& st, int id, bool deleting)
 {
     std::cout <<
         "+==============================+==================================+\n|";
@@ -68,9 +68,16 @@ void editingMenu(std::vector<student>& st, int id)
 
     for (int i = 0; i < st.size(); i++)
     {
-        if (i == id) setColor(0, 15);
-        std::cout << "| " << std::left << std::setw(23) << st[i].fullName << "|  " << (char)toupper(st[i].sex) << "  | " << st[i].age << "  |  " << st[i].group << "  | " << st[i].id << "  |  " << std::setw(6) << st[i].GPA << "|  " << st[i].sessionGrades[0] << "  |    " << st[i].sessionGrades[1] << "    |      " << st[i].sessionGrades[2] << "      |           " << st[i].commonGrades[0] << "           |           " << st[i].commonGrades[1] << "           |    " << st[i].commonGrades[2] << "    |    " << st[i].commonGrades[3] << "    |\n";
+        if (i == id && !deleting) setColor(0, 15);
+        std::cout << "| " << std::left << std::setw(23) << st[i].fullName << "|  " << (char)toupper(st[i].sex) << "  | " << st[i].age << "  |  " << st[i].group << "  | " << std::setw(3) << st[i].id << "|  " << std::setw(6) << st[i].GPA << "|  " << st[i].sessionGrades[0] << "  |    " << st[i].sessionGrades[1] << "    |      " << st[i].sessionGrades[2] << "      |           " << st[i].commonGrades[0] << "           |           " << st[i].commonGrades[1] << "           |    " << st[i].commonGrades[2] << "    |    " << st[i].commonGrades[3] << "    |";
+        if (i == id && deleting)
+        {
+            setColor(15, 0);
+            setColor(0, 4);
+            std::cout << "  x  ";
+        }
         setColor(15, 0);
+        std::cout << '\n';
     }
 
     std::cout <<
@@ -79,6 +86,8 @@ void editingMenu(std::vector<student>& st, int id)
         "|                                                                 |\n"
         "| [w]     -> scroll up                                            |\n"
         "| [s]     -> scroll down                                          |\n"
+        "| [d]     -> delelting mode ON                                    |\n"
+        "| [a]     -> deleting mode OFF                                    |\n"
         "| [Space] -> select                                               |\n"
         "+=================================================================+\n";
 }
@@ -127,7 +136,8 @@ void createNewEntry(std::vector<student>& st)
 
     student temp;
     std::cout << "Last name first name: ";
-    std::cin.getline(temp.fullName, 23);// >> temp.fullName;
+    std::cin >> std::setw(22) >> temp.fullName;
+    std::cin.clear();
     ////////////////////////////////////////////////////////////////////////////////////
     std::cout << "\nSex (F/M): ";
     std::cin >> temp.sex;
@@ -178,68 +188,129 @@ void createNewEntry(std::vector<student>& st)
     ////////////////////////////////////////////////////////////////////////////////////
     st.push_back(temp);
 }
-void editingEntry(int id, std::vector<student>& st)
+void deletingEntry(int &id, std::vector<student>& st)
+{
+    int scroll = 0;
+    char str[][8] = { "[ No ]", "[ Yes ]" };
+    bool isEnable = true;
+    while (isEnable)
+    {
+        system("cls");
+        std::cout <<
+            "+===============================================+\n"
+            "|  Are you sure you want to delete this entry?  |\n"
+            "+===============================================+\n"
+            "|                                               |\n"
+            "|           ";
+
+
+        for (int i = 1; i >= 0; i--)
+        {
+            if (i == 0 && i == scroll) setColor(0, 2);
+            if (i == 1 && i == scroll) setColor(0, 4);
+            std::cout << str[i];
+            setColor(15, 0);
+            std::cout << "           ";
+        }
+
+        std::cout << " |\n"
+            "|                                               |\n"
+            "+===============================================+\n"
+            "| Controls:                                     |\n"
+            "|                                               |\n"
+            "| [a] [d] -> choosing an option                 |\n"
+            "| [Space] -> select                             |\n"
+            "+===============================================+\n";
+
+        switch (_getch())
+        {
+        case 'a':
+            if (scroll != 1)scroll++;
+            else scroll = 0;
+            break;
+        case 'd':
+            if (scroll != 0)scroll--;
+            else scroll = 1;
+            break;
+        case ' ':
+            if (scroll == 1)
+            {
+                st.erase(st.begin() + id);
+                id--;
+            }
+            isEnable = false;
+            break;
+        }
+    }
+}
+void editingEntry(int &id, std::vector<student>& st, bool &deleting)
 {
     system("cls");
 
-    char escape = '+';
-
-    std::cout <<
-        "+===============+\n"
-        "| Entry editing |\n"
-        "+===============+\n";
-
-    std::cout << "Name: " << st[id].fullName << " -> ";
-    std::cin.getline(st[id].fullName, 80);
-    ////////////////////////////////////////////////////////////////////////////////////
-    std::cout << "Sex: " << st[id].sex << " -> ";
-    std::cin >> st[id].sex;
-    while ((st[id].sex != 'F' && st[id].sex != 'M') && (st[id].sex != 'f' && st[id].sex != 'm'))
+    if (deleting)
     {
-        std::cout << "you entered unacceptable value, try again: ";
-        std::cin >> st[id].sex;
+        deletingEntry(id, st);
+        deleting = false;
     }
-    ////////////////////////////////////////////////////////////////////////////////////
-    std::cout << "Age: " << st[id].age << " -> ";
-    std::cin >> st[id].age;
-    errormessage(st[id].age, 18, 99);
-    ////////////////////////////////////////////////////////////////////////////////////
-    std::cout << "Group: " << st[id].group << " -> ";
-    std::cin >> st[id].group;
-    errormessage(st[id].group, 1000, 9999);
-    ////////////////////////////////////////////////////////////////////////////////////
-    std::cout << "Id: " << st[id].id << " -> ";
-    std::cin >> st[id].id;
-    ////////////////////////////////////////////////////////////////////////////////////
-    std::cout << "Algebra and geometry grade : " << st[id].sessionGrades[0] << " -> ";
-    std::cin >> st[id].sessionGrades[0];
-    errormessage(st[id].sessionGrades[0], 3, 5);
-    ////////////////////////////////////////////////////////////////////////////////////
-    std::cout << "Math analysis: " << st[id].sessionGrades[1] << " -> ";
-    std::cin >> st[id].sessionGrades[1];
-    errormessage(st[id].sessionGrades[1], 3, 5);
-    ////////////////////////////////////////////////////////////////////////////////////
-    std::cout << "informatics grade: " << st[id].sessionGrades[2] << " -> ";
-    std::cin >> st[id].sessionGrades[2];
-    errormessage(st[id].sessionGrades[2], 3, 5);
-    ////////////////////////////////////////////////////////////////////////////////////
-    std::cout << "Programming(lecture) grade: " << st[id].commonGrades[0] << " -> ";
-    std::cin >> st[id].commonGrades[0];
-    errormessage(st[id].commonGrades[0], 3, 5);
-    ////////////////////////////////////////////////////////////////////////////////////
-    std::cout << "Programming(practice) grade: " << st[id].commonGrades[1] << " -> ";
-    std::cin >> st[id].commonGrades[1];
-    errormessage(st[id].commonGrades[1], 3, 5);
-    ////////////////////////////////////////////////////////////////////////////////////
-    std::cout << "History grade: " << st[id].commonGrades[2] << " -> ";
-    std::cin >> st[id].commonGrades[2];
-    errormessage(st[id].commonGrades[2], 3, 5);
-    ////////////////////////////////////////////////////////////////////////////////////
-    std::cout << "English grade: " << st[id].commonGrades[3] << " -> ";
-    std::cin >> st[id].commonGrades[3];
-    errormessage(st[id].commonGrades[3], 3, 5);
-    ////////////////////////////////////////////////////////////////////////////////////
-    st[id].GPA = floor((st[id].sessionGrades[0] + st[id].sessionGrades[1] + st[id].sessionGrades[2] + st[id].commonGrades[0] + st[id].commonGrades[1] + st[id].commonGrades[2] + st[id].commonGrades[3]) / 7.0 * 100) / 100;
+    else
+    {
+        std::cout <<
+            "+===============+\n"
+            "| Entry editing |\n"
+            "+===============+\n";
+
+        std::cout << "Name: " << st[id].fullName << " -> ";
+        std::cin >> std::setw(22) >> st[id].fullName;
+        ////////////////////////////////////////////////////////////////////////////////////
+        std::cout << "Sex: " << st[id].sex << " -> ";
+        std::cin >> st[id].sex;
+        while ((st[id].sex != 'F' && st[id].sex != 'M') && (st[id].sex != 'f' && st[id].sex != 'm'))
+        {
+            std::cout << "you entered unacceptable value, try again: ";
+            std::cin >> st[id].sex;
+        }
+        ////////////////////////////////////////////////////////////////////////////////////
+        std::cout << "Age: " << st[id].age << " -> ";
+        std::cin >> st[id].age;
+        errormessage(st[id].age, 18, 99);
+        ////////////////////////////////////////////////////////////////////////////////////
+        std::cout << "Group: " << st[id].group << " -> ";
+        std::cin >> st[id].group;
+        errormessage(st[id].group, 1000, 9999);
+        ////////////////////////////////////////////////////////////////////////////////////
+        std::cout << "Id: " << st[id].id << " -> ";
+        std::cin >> st[id].id;
+        ////////////////////////////////////////////////////////////////////////////////////
+        std::cout << "Algebra and geometry grade : " << st[id].sessionGrades[0] << " -> ";
+        std::cin >> st[id].sessionGrades[0];
+        errormessage(st[id].sessionGrades[0], 3, 5);
+        ////////////////////////////////////////////////////////////////////////////////////
+        std::cout << "Math analysis: " << st[id].sessionGrades[1] << " -> ";
+        std::cin >> st[id].sessionGrades[1];
+        errormessage(st[id].sessionGrades[1], 3, 5);
+        ////////////////////////////////////////////////////////////////////////////////////
+        std::cout << "informatics grade: " << st[id].sessionGrades[2] << " -> ";
+        std::cin >> st[id].sessionGrades[2];
+        errormessage(st[id].sessionGrades[2], 3, 5);
+        ////////////////////////////////////////////////////////////////////////////////////
+        std::cout << "Programming(lecture) grade: " << st[id].commonGrades[0] << " -> ";
+        std::cin >> st[id].commonGrades[0];
+        errormessage(st[id].commonGrades[0], 3, 5);
+        ////////////////////////////////////////////////////////////////////////////////////
+        std::cout << "Programming(practice) grade: " << st[id].commonGrades[1] << " -> ";
+        std::cin >> st[id].commonGrades[1];
+        errormessage(st[id].commonGrades[1], 3, 5);
+        ////////////////////////////////////////////////////////////////////////////////////
+        std::cout << "History grade: " << st[id].commonGrades[2] << " -> ";
+        std::cin >> st[id].commonGrades[2];
+        errormessage(st[id].commonGrades[2], 3, 5);
+        ////////////////////////////////////////////////////////////////////////////////////
+        std::cout << "English grade: " << st[id].commonGrades[3] << " -> ";
+        std::cin >> st[id].commonGrades[3];
+        errormessage(st[id].commonGrades[3], 3, 5);
+        ////////////////////////////////////////////////////////////////////////////////////
+        st[id].GPA = floor((st[id].sessionGrades[0] + st[id].sessionGrades[1] + st[id].sessionGrades[2] + st[id].commonGrades[0] + st[id].commonGrades[1] + st[id].commonGrades[2] + st[id].commonGrades[3]) / 7.0 * 100) / 100;
+    }
 }
 void withOutGrant(const std::vector<student> st)
 {
@@ -251,7 +322,7 @@ void withOutGrant(const std::vector<student> st)
 
     for (int i = 0; i < st.size(); i++)
         if (st[i].sessionGrades[0] == 3 || st[i].sessionGrades[1] == 3 || st[i].sessionGrades[2] == 3 || st[i].commonGrades[0] == 3 || st[i].commonGrades[1] == 3 || st[i].commonGrades[2] == 3 || st[i].commonGrades[3] == 3)
-            std::cout << "| " << std::left << std::setw(23) << st[i].fullName << "|  " << (char)toupper(st[i].sex) << "  | " << st[i].age << "  |  " << st[i].group << "  | " << st[i].id << "  |  " << std::setw(6) << st[i].GPA << "|  " << st[i].sessionGrades[0] << "  |    " << st[i].sessionGrades[1] << "    |      " << st[i].sessionGrades[2] << "      |           " << st[i].commonGrades[0] << "           |           " << st[i].commonGrades[1] << "           |    " << st[i].commonGrades[2] << "    |    " << st[i].commonGrades[3] << "    |\n";
+            std::cout << "| " << std::left << std::setw(23) << st[i].fullName << "|  " << (char)toupper(st[i].sex) << "  | " << st[i].age << "  |  " << st[i].group << "  | " << std::setw(3) << st[i].id << "  |  " << std::setw(6) << st[i].GPA << "|  " << st[i].sessionGrades[0] << "  |    " << st[i].sessionGrades[1] << "    |      " << st[i].sessionGrades[2] << "      |           " << st[i].commonGrades[0] << "           |           " << st[i].commonGrades[1] << "           |    " << st[i].commonGrades[2] << "    |    " << st[i].commonGrades[3] << "    |\n";
 
     std::cout <<
         "+========================+=====+=====+========+====+========+=====+=========+=============+=======================+=======================+=========+=========+\n";
@@ -267,7 +338,7 @@ void goodExcellent(const std::vector<student> st)
 
     for (int i = 0; i < st.size(); i++)
         if (st[i].sessionGrades[0] > 3 && st[i].sessionGrades[1] > 3 && st[i].sessionGrades[2] > 3 && st[i].commonGrades[0] > 3 && st[i].commonGrades[1] > 3 && st[i].commonGrades[2] > 3 && st[i].commonGrades[3] > 3)
-            std::cout << "| " << std::left << std::setw(23) << st[i].fullName << "|  " << (char)toupper(st[i].sex) << "  | " << st[i].age << "  |  " << st[i].group << "  | " << st[i].id << "  |  " << std::setw(6) << st[i].GPA << "|  " << st[i].sessionGrades[0] << "  |    " << st[i].sessionGrades[1] << "    |      " << st[i].sessionGrades[2] << "      |           " << st[i].commonGrades[0] << "           |           " << st[i].commonGrades[1] << "           |    " << st[i].commonGrades[2] << "    |    " << st[i].commonGrades[3] << "    |\n";
+            std::cout << "| " << std::left << std::setw(23) << st[i].fullName << "|  " << (char)toupper(st[i].sex) << "  | " << st[i].age << "  |  " << st[i].group << "  | " << std::setw(3) << st[i].id << "  |  " << std::setw(6) << st[i].GPA << "|  " << st[i].sessionGrades[0] << "  |    " << st[i].sessionGrades[1] << "    |      " << st[i].sessionGrades[2] << "      |           " << st[i].commonGrades[0] << "           |           " << st[i].commonGrades[1] << "           |    " << st[i].commonGrades[2] << "    |    " << st[i].commonGrades[3] << "    |\n";
 
     std::cout <<
         "+========================+=====+=====+========+====+========+=====+=========+=============+=======================+=======================+=========+=========+\n";
@@ -283,7 +354,7 @@ void excellent(const std::vector<student> st)
 
     for (int i = 0; i < st.size(); i++)
         if (st[i].sessionGrades[0] == 5 && st[i].sessionGrades[1] == 5 && st[i].sessionGrades[2] == 5 && st[i].commonGrades[0] == 5 && st[i].commonGrades[1] == 5 && st[i].commonGrades[2] == 5 && st[i].commonGrades[3] == 5)
-            std::cout << "| " << std::left << std::setw(23) << st[i].fullName << "|  " << (char)toupper(st[i].sex) << "  | " << st[i].age << "  |  " << st[i].group << "  | " << st[i].id << "  |  " << std::setw(6) << st[i].GPA << "|  " << st[i].sessionGrades[0] << "  |    " << st[i].sessionGrades[1] << "    |      " << st[i].sessionGrades[2] << "      |           " << st[i].commonGrades[0] << "           |           " << st[i].commonGrades[1] << "           |    " << st[i].commonGrades[2] << "    |    " << st[i].commonGrades[3] << "    |\n";
+            std::cout << "| " << std::left << std::setw(23) << st[i].fullName << "|  " << (char)toupper(st[i].sex) << "  | " << st[i].age << "  |  " << st[i].group << "  | " << std::setw(3) << st[i].id << "  |  " << std::setw(6) << st[i].GPA << "|  " << st[i].sessionGrades[0] << "  |    " << st[i].sessionGrades[1] << "    |      " << st[i].sessionGrades[2] << "      |           " << st[i].commonGrades[0] << "           |           " << st[i].commonGrades[1] << "           |    " << st[i].commonGrades[2] << "    |    " << st[i].commonGrades[3] << "    |\n";
 
     std::cout <<
         "+========================+=====+=====+========+====+========+=====+=========+=============+=======================+=======================+=========+=========+\n";
@@ -307,11 +378,13 @@ void selectingGrant(int id, const std::vector<student> st)
 void selectingEntry(std::vector<student>& st)
 {
     int scroll = -1;
-    bool isEnabled = true;
+    bool isEnabled = true,
+        isDeleting = false;
+
 
     while (isEnabled)
     {
-        editingMenu(st, scroll);
+        editingMenu(st, scroll, isDeleting);
         switch (_getch())
         {
         case 'w':
@@ -322,9 +395,15 @@ void selectingEntry(std::vector<student>& st)
             if (scroll != st.size() - 1) scroll++;
             else scroll = -1;
             break;
+        case 'd':
+            if(scroll != -1) isDeleting = true;
+            break;
+        case 'a':
+            isDeleting = false;
+            break;
         case ' ':
             if (scroll == -1) isEnabled = false;
-            else editingEntry(scroll, st);
+            else editingEntry(scroll, st, isDeleting);
             break;
         }
         system("cls");
@@ -345,7 +424,7 @@ void displaySelectedGroup(const std::vector<student> st)
 
     for (int i = 0; i < st.size(); i++)
         if (st[i].group == group)
-            std::cout << "| " << std::left << std::setw(23) << st[i].fullName << "|  " << (char)toupper(st[i].sex) << "  | " << st[i].age << "  |  " << st[i].group << "  | " << st[i].id << "  |  " << std::setw(6) << st[i].GPA << "|  " << st[i].sessionGrades[0] << "  |    " << st[i].sessionGrades[1] << "    |      " << st[i].sessionGrades[2] << "      |           " << st[i].commonGrades[0] << "           |           " << st[i].commonGrades[1] << "           |    " << st[i].commonGrades[2] << "    |    " << st[i].commonGrades[3] << "    |\n";
+            std::cout << "| " << std::left << std::setw(23) << st[i].fullName << "|  " << (char)toupper(st[i].sex) << "  | " << st[i].age << "  |  " << st[i].group << "  | " << std::setw(3) << st[i].id << "  |  " << std::setw(6) << st[i].GPA << "|  " << st[i].sessionGrades[0] << "  |    " << st[i].sessionGrades[1] << "    |      " << st[i].sessionGrades[2] << "      |           " << st[i].commonGrades[0] << "           |           " << st[i].commonGrades[1] << "           |    " << st[i].commonGrades[2] << "    |    " << st[i].commonGrades[3] << "    |\n";
 
     std::cout <<
         "+========================+=====+=====+========+====+========+=====+=========+=============+=======================+=======================+=========+=========+\n";
@@ -372,7 +451,7 @@ void displaySelectedSex(const std::vector<student> st)
 
     for (int i = 0; i < st.size(); i++)
         if (st[i].sex == sex)
-            std::cout << "| " << std::left << std::setw(23) << st[i].fullName << "|  " << st[i].sex << "  | " << st[i].age << "  |  " << st[i].group << "  | " << st[i].id << "  |  " << std::setw(6) << st[i].GPA << "|  " << st[i].sessionGrades[0] << "  |    " << st[i].sessionGrades[1] << "    |      " << st[i].sessionGrades[2] << "      |           " << st[i].commonGrades[0] << "           |           " << st[i].commonGrades[1] << "           |    " << st[i].commonGrades[2] << "    |    " << st[i].commonGrades[3] << "    |\n";
+            std::cout << "| " << std::left << std::setw(23) << st[i].fullName << "|  " << st[i].sex << "  | " << st[i].age << "  |  " << st[i].group << "  | " << std::setw(3) << st[i].id << "  |  " << std::setw(6) << st[i].GPA << "|  " << st[i].sessionGrades[0] << "  |    " << st[i].sessionGrades[1] << "    |      " << st[i].sessionGrades[2] << "      |           " << st[i].commonGrades[0] << "           |           " << st[i].commonGrades[1] << "           |    " << st[i].commonGrades[2] << "    |    " << st[i].commonGrades[3] << "    |\n";
 
     std::cout <<
         "+========================+=====+=====+========+====+========+=====+=========+=============+=======================+=======================+=========+=========+\n";
@@ -393,7 +472,7 @@ void displaySelectedId(const std::vector<student> st)
 
     for (int i = 0; i < st.size(); i++)
         if (st[i].id == id)
-            std::cout << "| " << std::left << std::setw(23) << st[i].fullName << "|  " << (char)toupper(st[i].sex) << "  | " << st[i].age << "  |  " << st[i].group << "  | " << st[i].id << "  |  " << std::setw(6) << st[i].GPA << "|  " << st[i].sessionGrades[0] << "  |    " << st[i].sessionGrades[1] << "    |      " << st[i].sessionGrades[2] << "      |           " << st[i].commonGrades[0] << "           |           " << st[i].commonGrades[1] << "           |    " << st[i].commonGrades[2] << "    |    " << st[i].commonGrades[3] << "    |\n";
+            std::cout << "| " << std::left << std::setw(23) << st[i].fullName << "|  " << (char)toupper(st[i].sex) << "  | " << st[i].age << "  |  " << st[i].group << "  | " << std::setw(3) << st[i].id << "  |  " << std::setw(6) << st[i].GPA << "|  " << st[i].sessionGrades[0] << "  |    " << st[i].sessionGrades[1] << "    |      " << st[i].sessionGrades[2] << "      |           " << st[i].commonGrades[0] << "           |           " << st[i].commonGrades[1] << "           |    " << st[i].commonGrades[2] << "    |    " << st[i].commonGrades[3] << "    |\n";
 
     std::cout <<
         "+========================+=====+=====+========+====+========+=====+=========+=============+=======================+=======================+=========+=========+\n";
@@ -411,7 +490,7 @@ void displayTopGPAStudents(std::vector<student> st)
         "+=======+========================+=====+=====+========+====+========+=====+=========+=============+=======================+=======================+=========+=========+\n";
 
     for (int i = size-1; i >= 0; i--)
-        std::cout << "|   " << (i - size) * -1 << "   | " << std::left << std::setw(23) << st[i].fullName << "|  " << st[i].sex << "  | " << st[i].age << "  |  " << st[i].group << "  | " << st[i].id << "  |  " << std::setw(6) << st[i].GPA << "|  " << st[i].sessionGrades[0] << "  |    " << st[i].sessionGrades[1] << "    |      " << st[i].sessionGrades[2] << "      |           " << st[i].commonGrades[0] << "           |           " << st[i].commonGrades[1] << "           |    " << st[i].commonGrades[2] << "    |    " << st[i].commonGrades[3] << "    |\n";
+        std::cout << "|   " << (i - size) * -1 << "   | " << std::left << std::setw(23) << st[i].fullName << "|  " << st[i].sex << "  | " << st[i].age << "  |  " << st[i].group << "  | " << std::setw(3) << st[i].id << "  |  " << std::setw(6) << st[i].GPA << "|  " << st[i].sessionGrades[0] << "  |    " << st[i].sessionGrades[1] << "    |      " << st[i].sessionGrades[2] << "      |           " << st[i].commonGrades[0] << "           |           " << st[i].commonGrades[1] << "           |    " << st[i].commonGrades[2] << "    |    " << st[i].commonGrades[3] << "    |\n";
 
     std::cout <<
         "+=======+========================+=====+=====+========+====+========+=====+=========+=============+=======================+=======================+=========+=========+\n";
@@ -427,7 +506,7 @@ void displayAllStudentsInfo(const std::vector<student> st)
 
 
     for (int i = 0; i < st.size(); i++)
-        std::cout << "| " << std::left << std::setw(23) << st[i].fullName << "|  " << (char)toupper(st[i].sex) << "  | " << st[i].age << "  |  " << st[i].group << "  | " << st[i].id << "  |  " << std::setw(6) << st[i].GPA << "|  " << st[i].sessionGrades[0] << "  |    " << st[i].sessionGrades[1] << "    |      " << st[i].sessionGrades[2] << "      |           " << st[i].commonGrades[0] << "           |           " << st[i].commonGrades[1] << "           |    " << st[i].commonGrades[2] << "    |    " << st[i].commonGrades[3] << "    |\n";
+        std::cout << "| " << std::left << std::setw(23) << st[i].fullName << "|  " << (char)toupper(st[i].sex) << "  | " << st[i].age << "  |  " << st[i].group << "  | " << std::setw(3) << st[i].id << "  |  " << std::setw(6) << st[i].GPA << "|  " << st[i].sessionGrades[0] << "  |    " << st[i].sessionGrades[1] << "    |      " << st[i].sessionGrades[2] << "      |           " << st[i].commonGrades[0] << "           |           " << st[i].commonGrades[1] << "           |    " << st[i].commonGrades[2] << "    |    " << st[i].commonGrades[3] << "    |\n";
 
     std::cout <<
         "+========================+=====+=====+========+====+========+=====+=========+=============+=======================+=======================+=========+=========+\n";
