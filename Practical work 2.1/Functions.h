@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <fstream>
 
 struct student
 {
@@ -38,3 +39,5 @@ void displayTopGPAStudents(std::vector<student> st);
 void displayAllStudentsInfo(const std::vector<student> st);
 void studentsGrant(const std::vector<student> st);
 void selectedField(int position, std::vector<student>& students);
+void writeInToFile(const std::vector<student> st);
+void getFromFile(std::vector<student>& st);

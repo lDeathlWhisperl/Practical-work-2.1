@@ -5,14 +5,12 @@
 
 int main()
 {
-    setlocale(0, "rus");
+    setlocale(LC_ALL, "RUS");
     fullscreen();
 
     std::vector<student> students;
-    students.push_back({ "Бессмертных Артем", 'M', 20, 1324, 1, 3, 5, 4, 3, 3, 4, 5});
-    students.push_back({ "Мансуров Ярослав",  'M', 20, 1324, 2, 3, 5, 3, 3, 4, 4, 5});
-    students.push_back({ "Митин Илья",        'M', 20, 1324, 3, 5, 4, 5, 5, 5, 5, 5});
-    students.push_back({ "Лбова Анна",        'F', 18, 1323, 1, 5, 5, 5, 5, 5, 5, 5});
+    
+    getFromFile(students);
 
     int scroll = 0;
     bool isEnabled = true;
@@ -36,5 +34,6 @@ int main()
         }
         system("Cls");
     }
+    writeInToFile(students);
     return 0;
 }
