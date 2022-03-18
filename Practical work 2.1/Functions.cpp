@@ -4,6 +4,8 @@
 #include <conio.h>
 #include <vector>
 #include <algorithm>
+#include <fstream>
+#include <string>
 #include "Functions.h"
 
 //other
@@ -139,7 +141,7 @@ void createNewEntry(std::vector<student>& st)
 
     student temp;
     std::cout << "Last name first name: ";
-    getline(std::cin, temp.fullName, '\n'); //нужно поставить лимит на символы
+    getline(std::cin, temp.fullName, '\n');
     while (temp.fullName.size() > 22)
     {
         std::cout << "You have entered more than 22 sumbols. Please use the shotred form of the name\n";
@@ -268,7 +270,7 @@ void editingEntry(int &id, std::vector<student>& st, bool &deleting)
             "+===============+\n";
 
         std::cout << "Name: " << st[id].fullName << " -> ";
-        getline(std::cin, st[id].fullName, '\n'); //нужно поставить лимит на символы
+        getline(std::cin, st[id].fullName, '\n');
         while (st[id].fullName.size() > 22)
         {
             std::cout << "You have entered more than 22 sumbols. Please use the shotred form of the name\n";
@@ -591,7 +593,6 @@ void getFromFile(std::vector<student>& st)
     std::string fN;              //structure field  -> fullName
     char s;                      //structure field  -> sex
     int a, gr, id, sG[3], cG[4]; //structure fields -> age, group, id, sessionGrades, commonGrades
-    double GPA;
 
     std::ifstream fin("DataBase.txt");
 
