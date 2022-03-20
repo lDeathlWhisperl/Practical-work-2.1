@@ -383,7 +383,7 @@ void displaySelectedGroup(const std::vector<student> st)
     int group;
     std::cout << "which group do you want to see?\n";
     std::cin >> group;
-    errormessage(group, 1000, 9999);
+    errormessage(group, 1321, 1326);
     system("cls");
 
     std::cout <<
