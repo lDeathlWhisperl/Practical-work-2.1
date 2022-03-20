@@ -291,7 +291,7 @@ void editingEntry(int &id, std::vector<student>& st, bool &deleting)
         ////////////////////////////////////////////////////////////////////////////////////
         std::cout << "Group (1323-1326): " << st[id].group << " -> ";
         std::cin >> st[id].group;
-        errormessage(st[id].group, 1323, 1326);
+        errormessage(st[id].group, 1321, 1326);
         ////////////////////////////////////////////////////////////////////////////////////
         std::cout << "Id: " << st[id].id << " -> ";
         std::cin >> st[id].id;
