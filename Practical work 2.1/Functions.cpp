@@ -325,7 +325,7 @@ void editingEntry(int &id, std::vector<student>& st, bool &deleting)
         std::cin >> st[id].commonGrades[3];
         errormessage(st[id].commonGrades[3], 3, 5);
         ////////////////////////////////////////////////////////////////////////////////////
-        st[id].GPA = floor((st[id].sessionGrades[0] + st[id].sessionGrades[1] + st[id].sessionGrades[2] + st[id].commonGrades[0] + st[id].commonGrades[1] + st[id].commonGrades[2] + st[id].commonGrades[3]) / 7.0 * 100) / 100;
+        st[id].countGPA();
     }
 }
 //Student's marks
@@ -611,7 +611,7 @@ void getFromFile(std::vector<student>& st)
                 temp.commonGrades[i] = cG[i];
             temp.fullName = fN;
             temp.fullName.erase(temp.fullName.find('\n'), 1);
-            temp.GPA = floor((sG[0] + sG[1] + sG[2] + cG[0] + cG[1] + cG[2] + cG[3]) / 7.0 * 100) / 100;
+            temp.countGPA();
             st.push_back(temp);
         }
     }

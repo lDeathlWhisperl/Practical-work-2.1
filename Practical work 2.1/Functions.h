@@ -3,16 +3,28 @@
 struct student
 {
     std::string fullName;
-    char sex = 'F';
-    int age = 10;
-    int group = 1000;
-    int id = 0;
-    int sessionGrades[3] = { 3, 3, 3 };
-    int commonGrades[4] = { 3, 3, 3, 3 };
-    double GPA = floor((sessionGrades[0] + sessionGrades[1] + sessionGrades[2] + commonGrades[0] + commonGrades[1] + commonGrades[2] + commonGrades[3]) / 7.0 * 100) / 100;
+    char sex;
+    int age;
+    int group;
+    int id;
+    int sessionGrades[3];
+    int commonGrades[4];
+    double GPA = 0;
 
     bool operator< (const student& a) const {
         return GPA < a.GPA;
+    }
+
+    void countGPA()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (i < 3)
+                GPA += sessionGrades[i];
+            GPA += commonGrades[i];
+        }
+
+        GPA = floor(GPA / 7.0 * 100) / 100;
     }
 };
 
@@ -45,3 +57,4 @@ void selectedField(int position, std::vector<student>& students);
 //file processing
 void writeInToFile(const std::vector<student> st);
 void getFromFile(std::vector<student>& st);
+
