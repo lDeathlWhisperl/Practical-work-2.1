@@ -138,15 +138,23 @@ void createNewEntry(std::vector<student>& st)
         "+====================+\n"
         "| Creating new entry |\n"
         "+====================+\n";
-
     student temp;
     std::cout << "Last name first name: ";
     getline(std::cin, temp.fullName, '\n');
-    while (temp.fullName.size() > 22)
-    {
-        std::cout << "You have entered more than 22 sumbols. Please use the shotred form of the name\n";
-        getline(std::cin, temp.fullName, '\n');
-    }
+    if (temp.fullName.size() > 22)
+        while (true)
+        {
+            std::cout << "You have entered more than 22 symbols. Please use the shotred form of the name\n";
+            getline(std::cin, temp.fullName, '\n');
+            if (temp.fullName.size() <= 22 && temp.fullName.size() > 0) break;
+        }
+    else if (temp.fullName.size() < 1)
+        while (true)
+        {
+            std::cout << "You have entered less than 1 symbol. Try again\n";
+            getline(std::cin, temp.fullName, '\n');
+            if (temp.fullName.size() <= 22 && temp.fullName.size() > 0) break;
+        }
     ////////////////////////////////////////////////////////////////////////////////////
     std::cout << "\nSex (F/M): ";
     std::cin >> temp.sex;
@@ -160,9 +168,9 @@ void createNewEntry(std::vector<student>& st)
     std::cin >> temp.age;
     errormessage(temp.age, 18, 99);
     ////////////////////////////////////////////////////////////////////////////////////
-    std::cout << "\nGroup (1321-1326): ";
+    std::cout << "\nGroup (1323-1324): ";
     std::cin >> temp.group;
-    errormessage(temp.group, 1321, 1326);
+    errormessage(temp.group, 1323, 1324);
     ////////////////////////////////////////////////////////////////////////////////////
     std::cout << "\nId: ";
     std::cin >> temp.id;
@@ -196,6 +204,7 @@ void createNewEntry(std::vector<student>& st)
     std::cin >> temp.commonGrades[3];
     errormessage(temp.commonGrades[3], 3, 5);
     ////////////////////////////////////////////////////////////////////////////////////
+    temp.countGPA();
     st.push_back(temp);
 }
 void deletingEntry(int &id, std::vector<student>& st)
@@ -271,11 +280,20 @@ void editingEntry(int &id, std::vector<student>& st, bool &deleting)
 
         std::cout << "Name: " << st[id].fullName << " -> ";
         getline(std::cin, st[id].fullName, '\n');
-        while (st[id].fullName.size() > 22)
-        {
-            std::cout << "You have entered more than 22 sumbols. Please use the shotred form of the name\n";
-            getline(std::cin, st[id].fullName, '\n');
-        }
+        if (st[id].fullName.size() > 22)
+            while (true)
+            {
+                std::cout << "You have entered more than 22 symbols. Please use the shotred form of the name\n";
+                getline(std::cin, st[id].fullName, '\n');
+                if (st[id].fullName.size() <= 22 && st[id].fullName.size() > 0) break;
+            }
+        else if (st[id].fullName.size() < 1)
+            while (true)
+            {
+                std::cout << "You have entered less than 1 symbol. Try again\n";
+                getline(std::cin, st[id].fullName, '\n');
+                if (st[id].fullName.size() <= 22 && st[id].fullName.size() > 0) break;
+            }
         ////////////////////////////////////////////////////////////////////////////////////
         std::cout << "Sex: " << st[id].sex << " -> ";
         std::cin >> st[id].sex;
@@ -289,9 +307,9 @@ void editingEntry(int &id, std::vector<student>& st, bool &deleting)
         std::cin >> st[id].age;
         errormessage(st[id].age, 18, 99);
         ////////////////////////////////////////////////////////////////////////////////////
-        std::cout << "Group (1323-1326): " << st[id].group << " -> ";
+        std::cout << "Group (1323-1324): " << st[id].group << " -> ";
         std::cin >> st[id].group;
-        errormessage(st[id].group, 1321, 1326);
+        errormessage(st[id].group, 1323, 1324);
         ////////////////////////////////////////////////////////////////////////////////////
         std::cout << "Id: " << st[id].id << " -> ";
         std::cin >> st[id].id;
@@ -383,7 +401,7 @@ void displaySelectedGroup(const std::vector<student> st)
     int group;
     std::cout << "which group do you want to see?\n";
     std::cin >> group;
-    errormessage(group, 1321, 1326);
+    errormessage(group, 1323, 1324);
     system("cls");
 
     std::cout <<

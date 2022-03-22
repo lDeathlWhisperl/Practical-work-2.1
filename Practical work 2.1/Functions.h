@@ -2,14 +2,14 @@
 
 struct student
 {
-    std::string fullName;
+    std::string fullName = " ";
     char sex;
     int age;
     int group;
     int id;
     int sessionGrades[3];
     int commonGrades[4];
-    double GPA = 0;
+    double GPA;
 
     bool operator< (const student& a) const {
         return GPA < a.GPA;
@@ -17,6 +17,7 @@ struct student
 
     void countGPA()
     {
+        GPA = 0;
         for (int i = 0; i < 4; i++)
         {
             if (i < 3)
